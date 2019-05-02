@@ -7,8 +7,8 @@
     </head>
     <body>
         <div class="style">
-        <h1>Sign in</h1>
-        <img src="./icons/gorilla.png" />
+        <h1>Sign up</h1>
+        <img src="./icons/gorilla.png" style="height: 100px; width:100px;"/>
         <div class="container">
         <form action="#" class="was-validated">
             <div class="form-group">
@@ -16,18 +16,17 @@
                 <input type="email" class="form-control" id="email" placeholder="Enter email" required>
             </div>
             <div class="form-group">
-                <label for="pseudonyme">Pseudonyme</label>
-                <input type="text" class="form-control" id="pwd" placeholder="Pseudonyme" required>
-            </div>
-            <div class="form-group">
                 <label for="pwd">Password</label>
                 <input type="password" class="form-control" id="pwd" placeholder="Enter password" required>
             </div>
-            <p style="font-size:20px;">Don't have an account yet ? Sign up <a href="sign-up.html">here</a>.</p>
+            <div class="form-group">
+                <label for="pwd">Confirm password</label>
+                <input type="password" class="form-control" id="confirm" placeholder="Confirm password" required>
+            </div>
             <br>
-            <a href="./home.html" class="button" >Sign in</a>
-            <!--<input id="inscription" class="button_text" type="submit" value="Submit" onclick="Inscription()">-->
-            <!--<span id="message" style="color:red"></span>-->
+            <p style="font-size:20px;">An e-mail to confirm this account will be sent to the e-mail address.</p>
+            <br>
+            <a href="./index.html">Sign up</a>
         </form>
         </div>  
         </div>
