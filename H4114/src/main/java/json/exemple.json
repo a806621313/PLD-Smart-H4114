@@ -1,0 +1,19 @@
+[
+    
+    {
+        "Question":{
+            "name":"Continuons-nous a bloqquer le batiment?",
+            "typeReponse":"radio",
+            "choix 1":"oui",
+            "choix 2":"non"
+        }
+    },
+    {
+        "Question":{
+            "name":"Continuons-nous?",
+            "typeReponse":"radio",
+            "choix 1":"oui",
+            "choix 2":"non"
+        }
+    }
+]
