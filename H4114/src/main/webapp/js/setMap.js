@@ -105,7 +105,12 @@ function createPositions(){
     positions.push({location: {latitude: 45.781980, longitude: 4.872514}});
     positions.push({location: {latitude: 45.782039, longitude: 4.872470}});
     positions.push({location: {latitude: 45.782048, longitude: 4.872501}});
+    
     positions.push({location: {latitude: 45.781048, longitude: 4.872501}});
+    positions.push({location: {latitude: 45.781108, longitude: 4.872500}});
+    positions.push({location: {latitude: 45.781008, longitude: 4.872504}});
+    
+    positions.push({location: {latitude: 45.782039, longitude: 4.862470}});
 }
 
 
@@ -120,12 +125,19 @@ function initMap() {
     var marker0 = new google.maps.Marker({
         position: location,
         map: map,
-        icon: { url: "./icons/man-blue-user.png"}
+        icon: { url: "./icons/man-red-user.png"}
     });
     
     var cluster = dbscan();
     var marker = [];
     for (var i = 0; i < positions.length; i++) {
+        if (cluster[i] == 0){
+            marker[i] = new google.maps.Marker({
+            position: {lat: positions[i].location.latitude, lng: positions[i].location.longitude},
+            map: map,
+            icon: { url: "./icons/man-black-user.png"}
+            });
+        }
         if (cluster[i] == 1){
             marker[i] = new google.maps.Marker({
             position: {lat: positions[i].location.latitude, lng: positions[i].location.longitude},
@@ -133,13 +145,21 @@ function initMap() {
             icon: { url: "./icons/man-blue-user.png"}
             });
         }
-        if (cluster[i] == 0){
+        if (cluster[i] == 2){
             marker[i] = new google.maps.Marker({
             position: {lat: positions[i].location.latitude, lng: positions[i].location.longitude},
             map: map,
-            icon: { url: "./icons/man-red-user.png"}
+            icon: { url: "./icons/man-green-user.png"}
             });
         }
+        if (cluster[i] == 3){
+            marker[i] = new google.maps.Marker({
+            position: {lat: positions[i].location.latitude, lng: positions[i].location.longitude},
+            map: map,
+            icon: { url: "./icons/man-pink-user.png"}
+            });
+        }
+        
         
     }
     
@@ -189,7 +209,7 @@ function dbscan() {
     //createPositions();
     console.log('positions: ', positions);
    
-    var dbscanner = jDBSCAN().eps(0.1).minPts(1).distance('HAVERSINE').data(positions);
+    var dbscanner = jDBSCAN().eps(0.05).minPts(1).distance('HAVERSINE').data(positions);
     console.log('dbscanner', dbscanner);
     var cluster_centers = dbscanner.getClusters(); 
     console.log('cluster_centers: ', cluster_centers);
