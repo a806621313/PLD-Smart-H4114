@@ -214,6 +214,7 @@
 			if (Array.isArray(d)) {
 				data = d;
 			}
+                        
 
 			return dbscan;
 		};
