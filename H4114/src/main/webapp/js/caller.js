@@ -7,14 +7,16 @@
 var socket;
 var localStream;
 var started = false;
-var pc;
+var pcs = [];
+var listeners = [];
+var index = 0;
 
 
 
-const configuration = {iceServers: [/*{urls: 'stun:stun.l.googke.com:19302'}*/{urls: 'turn:10.43.7.214:3479',
-    username: 'test',credential: 'test'}]};
+const configuration = {iceServers: [{urls: 'turn:10.43.7.214:3478',credential: 'test',
+    username: 'test'}]};
 const constraints = window.constraints = {
-  audio: true,
+  audio: false,
   video: true
 };
 
@@ -56,11 +58,6 @@ function stop() {
     });
 }
 
-function setLocalAndSendMessage(sessionDescription) {
-    pc.setLocalDescription(sessionDescription);
-    sendMessage(sessionDescription);
-}
-
 function errorMsg(msg, error) {
     const errorElement = document.querySelector('#errorMsg');
     errorElement.innerHTML += `<p>${msg}</p>`;
@@ -69,8 +66,8 @@ function errorMsg(msg, error) {
     }
 }
 
-function connectStart(){
-    socket = new WebSocket("ws://192.168.137.1:8084/H4114/video/10/start");
+function connectStart(number){
+    socket = new WebSocket("wss://192.168.137.1:8443/H4114/video/"+number+"/start/" + name);
     socket.onopen = function (event) {
         console.log("/!\\ Connexion serveur");
     };
@@ -83,48 +80,34 @@ function connectStart(){
         if(json.type === 'answer') {
             console.log(json.sdp);
             var desc = new RTCSessionDescription(json.sdp);
-            pc.setRemoteDescription(desc);
-        }
-    };
-    socket.onclose = function (event) {
-        sendMessage({
-            user : 'start',
-            type : 'bye'
-        });
-        console.log("/!\\ Déconnexion serveur");
-    };
-}
-
-function stream(){
-    if (!started && localStream) {
-        console.log("Creating PeerConnection.");
-        createPeerConnection();
-        console.log("Adding local stream.");
-        console.log(localStream);
-        localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
-        started = true;
-    }
-}
-
-
-function connectListen(){
-    socket = new WebSocket("ws://192.168.137.1:8084/H4114/video/10/listen");
-    socket.onopen = function (event) {
-        console.log("/!\\ Connexion serveur");
-    };
-    socket.onerror = function (event) {
-        console.log(event);
-    };
-    socket.onmessage = function (event) {
-        errorMsg(event.data);
-        console.log(event.data);
-        var json = JSON.parse(event.data);
-        if(json.type === 'candidate') {
+            var pos;
+            var i = 0;
+            for(i = 0; i < listeners.length; i++){
+                if(listeners[i].name === json.name){
+                    pos = listeners[i].index;
+                }
+            }
+            console.log(pos);
+            pcs[pos].setRemoteDescription(desc);
+            console.log(pcs[pos]);
+            console.log(localStream);
+        }else if(json.type === 'join'){
+            var mypos = index;
+            listeners.push({name:json.name,index:mypos});
+            createPeerConnection(mypos,json.name);
+            console.log("Adding local stream.");
+            index = index + 1;
+        }else if(json.type === 'candidate') {
             var candidate = new RTCIceCandidate(json.candidate);
-            pc.addIceCandidate(candidate);
-        }else if(json.type === 'offer') {
-            console.log(json.sdp);
-            handleVideoOfferMsg(json);
+            var pos;
+            var i = 0;
+            for(i = 0; i < listeners.length; i++){
+                if(listeners[i].name === json.name){
+                    pos = listeners[i].index;
+                }
+            }
+            pcs[pos].addIceCandidate(candidate);
+            console.log(candidate);
         }
     };
     socket.onclose = function (event) {
@@ -136,76 +119,53 @@ function connectListen(){
     };
 }
 
-function handleVideoOfferMsg(msg) {
-    errorMsg("handleVideoOfferMsg");
-    createPeerConnection();
-    errorMsg("handleVideoOfferMsg2");
-    var desc = new RTCSessionDescription(msg.sdp);
-    errorMsg("handleVideoOfferMsg4");
-
-    pc.setRemoteDescription(desc).then(function() {
-        return pc.createAnswer();
-        errorMsg("handleVideoOfferMsg5");
-    })
-    .then(function(answer) {
-        return pc.setLocalDescription(answer);
-    })
-    .then(function() {
-        errorMsg("handleVideoOfferMsg3");
-        var msg = {
-            user: "listen",
-            type: "answer",
-            sdp: pc.localDescription
-        }; 
-        errorMsg(msg);
-        sendMessage(msg);
-    });
-}
-
-
-function createPeerConnection() {
+function createPeerConnection(pos,userName) {
     errorMsg("createPeerConnection");
     errorMsg(configuration);
-    pc = new RTCPeerConnection(configuration);
+    pcs[pos] = new RTCPeerConnection(configuration);
+    localStream.getTracks().forEach(track => pcs[pos].addTrack(track, localStream));
     errorMsg("createPeerConnection2");
 
-    pc.onicecandidate = handleICECandidateEvent;
-    pc.ontrack = handleTrackEvent;
-    pc.onnegotiationneeded = handleNegotiationNeededEvent;
-    pc.onremovetrack = handleRemoveTrackEvent;
-    pc.oniceconnectionstatechange = handleICEConnectionStateChangeEvent;
-    pc.onicegatheringstatechange = handleICEGatheringStateChangeEvent;
-    pc.onsignalingstatechange = handleSignalingStateChangeEvent;
+    pcs[pos].onicecandidate = handleICECandidateEvent(userName);
+    pcs[pos].ontrack = handleTrackEvent;
+    pcs[pos].onnegotiationneeded = handleNegotiationNeededEvent(pcs[pos],userName);
+    pcs[pos].onremovetrack = handleRemoveTrackEvent;
+    pcs[pos].oniceconnectionstatechange = handleICEConnectionStateChangeEvent(pcs[pos]);
+    pcs[pos].onicegatheringstatechange = handleICEGatheringStateChangeEvent(pcs[pos]);
+    pcs[pos].onsignalingstatechange = handleSignalingStateChangeEvent(pcs[pos]);
 }
 
-function handleNegotiationNeededEvent() {
+function handleNegotiationNeededEvent(peer,userName) {
     console.log("Sending offer to peer.");
-    pc.createOffer().then(function(offer) {
-        return pc.setLocalDescription(offer);
+    peer.createOffer().then(function(offer) {
+        return peer.setLocalDescription(offer);
     })
     .then(function() {
+        console.log(peer.localDescription);
         sendMessage({
             user : 'start',
             type : 'offer',
-            sdp : pc.localDescription
+            name : userName,
+            sdp : peer.localDescription
         });
     });
 }
 
-function handleICECandidateEvent(event) {
+function handleICECandidateEvent(userName) {
     if (event.candidate) {
         sendMessage({
             user : "start",
-            type: "candidate",
+            type : "candidate",
+            name : userName,
             candidate: event.candidate
         });
     }
 }
 
-function handleICEConnectionStateChangeEvent(event) {
-    console.log("*** ICE connection state changed to " + pc.iceConnectionState);
+function handleICEConnectionStateChangeEvent(peer) {
+    console.log("*** ICE connection state changed to " + peer.iceConnectionState);
 
-    switch(pc.iceConnectionState) {
+    switch(peer.iceConnectionState) {
         case "closed":
         case "failed":
         case "disconnected":
@@ -213,25 +173,28 @@ function handleICEConnectionStateChangeEvent(event) {
     }
 }
 
-function handleSignalingStateChangeEvent(event) {
-    console.log("*** WebRTC signaling state changed to: " + pc.signalingState);
-    switch(pc.signalingState) {
+function handleSignalingStateChangeEvent(peer) {
+    console.log("*** WebRTC signaling state changed to: " + peer.signalingState);
+    switch(peer.signalingState) {
         case "closed":
             break;
     }
 }
 
-function handleICEGatheringStateChangeEvent(event) {
-    console.log("*** ICE gathering state changed to: " + pc.iceGatheringState);
+function handleICEGatheringStateChangeEvent(peer) {
+    console.log("*** ICE gathering state changed to: " + peer.iceGatheringState);
 }
 
 function handleTrackEvent(event) {
     const video = document.getElementById('video');
     video.srcObject = event.streams[0];
+    console.log(event.streams.length);
+    console.log(document.getElementById("video").srcObject);
+    errorMsg(document.getElementById("video").srcObject.id);
 }
 
 function handleRemoveTrackEvent(event) {
-    var stream = document.getElementById("videoDest").srcObject;
+    var stream = document.getElementById("video").srcObject;
     var trackList = stream.getTracks();
 
     if (trackList.length === 0) {

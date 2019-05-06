@@ -13,22 +13,28 @@
 		});
 		var marker = new google.maps.Marker({
 			position: location,
-			map: map
+			map: map,
+			icon: { url: "./icons/man-blue-user.png"}
+		});
+		var marker1 = new google.maps.Marker({
+			position: {lat: 45.782019, lng: 4.872554},
+			map: map,
+			icon: { url: "./icons/man-red-user.png"}
 		});
 		var marker2 = new google.maps.Marker({
-			position: {lat: -26.000, lng: 130.000},
+			position: {lat: 45.781980, lng: 4.872514},
 			map: map,
-			icon: { url: "./icons/man-user.png"}
+			icon: { url: "./icons/man-red-user.png"}
 		});
-		var markerClose = new google.maps.Marker({
-			position: {lat: -25.3631, lng: 131.0441},
+		var marker3 = new google.maps.Marker({
+			position: {lat: 45.782039, lng: 4.872470},
 			map: map,
-			icon: { url: "./icons/man-user.png"}
+			icon: { url: "./icons/man-red-user.png"}
 		});
-		var markerClose = new google.maps.Marker({
-			position: {lat: -25.36301, lng: 131.04401},
+                var marker4 = new google.maps.Marker({
+			position: {lat: 45.782048, lng: 4.872501},
 			map: map,
-			icon: { url: "./icons/man-user.png"}
+			icon: { url: "./icons/man-red-user.png"}
 		});
 	}
 </script>
