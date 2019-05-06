@@ -28,7 +28,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 @WebServlet(urlPatterns = {"/ActionServlet2"})
 public class ActionServlet extends HttpServlet {
-    
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -42,6 +42,7 @@ public class ActionServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("application/json;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
+            System.out.println("processing");
 
             String action = request.getParameter("action");
             if (action.equals("room")) {
@@ -50,52 +51,22 @@ public class ActionServlet extends HttpServlet {
                 HashMap<String, Boolean> rooms = ServerEndPoint.getServerEndPointState();
                 HashMap<String, Set <ServerEndPoint>> persons = ServerEndPoint.getServerEndPoints();
                 JsonArray jsonListe = new JsonArray();
-                if(!rooms.entrySet().isEmpty()){
-                    for (Map.Entry<String, Boolean> entry : rooms.entrySet()) {
-                        if(Objects.equals(entry.getValue(), Boolean.FALSE)){
-                            JsonObject json = new JsonObject();
-                            json.addProperty("num", entry.getKey());
-                            json.addProperty("person", persons.get(entry.getKey()).size());
-                            jsonListe.add(json);
-                        }
+                for (Map.Entry<String, Boolean> entry : rooms.entrySet()) {
+                    if(Objects.equals(entry.getValue(), Boolean.FALSE)){
+                        JsonObject json = new JsonObject();
+                        json.addProperty("num", entry.getKey());
+                        json.addProperty("person", persons.get(entry.getKey()).size());
+                        jsonListe.add(json);
                     }
                 }
                 jsonResponse.add("rooms", jsonListe);
                 out.println(gson.toJson(jsonResponse));
                 out.close();
             } else if(action.equals("create")){
-                Gson gson = new GsonBuilder().setPrettyPrinting().create();
-                JsonObject jsonResponse = new JsonObject();
-                int index = ServerEndPoint.getNumber();
-                jsonResponse.addProperty("index", index);
-                out.println(gson.toJson(jsonResponse));
-                out.close();
+                
             }
         }
     }
-    
-    
-
-
-
-    /*public static void printListePersonnes(PrintWriter out, List<Service.Personne> personnes) {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-
-        JsonArray jsonListe = new JsonArray();
-        for (Service.Personne p : personnes) {
-            JsonObject jsonPersonne = new JsonObject();
-            jsonPersonne.addProperty("id", p.getId());
-            jsonPersonne.addProperty("civilite", p.getCivilite());
-            jsonPersonne.addProperty("nom", p.getNom());
-            jsonPersonne.addProperty("prenom", p.getPrenom());
-            jsonPersonne.addProperty("mail", p.getMail());
-            jsonPersonne.addProperty("adresse", p.getAdresse());
-            jsonListe.add(jsonPersonne);
-        }
-        JsonObject container = new JsonObject();
-        container.add("personnes", jsonListe);
-        out.println(gson.toJson(container));
-    }*/
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
@@ -134,18 +105,4 @@ public class ActionServlet extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
-
-    /* private void printPersonne(PrintWriter out, Service.Personne p) {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        JsonObject jsonPersonne = new JsonObject();
-        jsonPersonne.addProperty("id", p.getId());
-        jsonPersonne.addProperty("civilite", p.getCivilite());
-        jsonPersonne.addProperty("nom", p.getNom());
-        jsonPersonne.addProperty("prenom", p.getPrenom());
-        jsonPersonne.addProperty("mail", p.getMail());
-        jsonPersonne.addProperty("adresse", p.getAdresse());
-        jsonPersonne.addProperty("dateNaissance", p.getDateNaissance().toString());
-        out.println(gson.toJson(jsonPersonne));
-    }*/
-   
 }

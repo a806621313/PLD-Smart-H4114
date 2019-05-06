@@ -99,4 +99,3 @@ public class JsonAnalyser {
     }*/
 }
 //<table class="table" style="border: none"><tr><th>Vote 1</th></tr><tr><th>number</th><td>Question 1</td></tr><tr><th>type</th><td>radio</td></tr><tr><th>content</th><td>a</td></tr><tr><th>choice 1</th><td>oui</td></tr><tr><th>choice 2</th><td>non</td></tr><tr><th>number</th><td>Question 2</td></tr><tr><th>type</th><td>radio</td></tr><tr><th>content</th><td>b</td></tr><tr><th>choice 1</th><td>oui</td></tr><tr><th>choice 2</th><td>non</td></tr></table>
-
