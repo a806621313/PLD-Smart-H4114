@@ -11,7 +11,6 @@ import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -19,6 +18,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import model.User;
 import service.DBConnection;
 
 /**
@@ -52,7 +52,7 @@ public class ActionServlet extends HttpServlet {
                     JsonObject connection=new JsonObject();
                     JsonObject connect=new JsonObject();
                     conn = DBConnection.Connection();
-                    boolean flag=DBConnection.Connect(email, password, conn);
+                    boolean flag=User.Connect(email, password, conn);
                     try (PrintWriter out = response.getWriter()) {
                         Gson gson=new GsonBuilder().setPrettyPrinting().create();
                         if(flag){
@@ -77,10 +77,11 @@ public class ActionServlet extends HttpServlet {
                 JsonObject inscription=new JsonObject();
                 try {
                     conn = DBConnection.Connection();
-                    boolean exist=DBConnection.UserExist(email,pseudo,conn);
+                    boolean exist=User.UserExist(email,pseudo,conn);
                     System.out.println(exist);
                     if(!exist){
-                        if(DBConnection.Insert(conn,email,pseudo,password)!=-1){
+                        if(User.Insert(conn,email,pseudo,password)){
+                            System.out.println("abc");
                             try (PrintWriter out = response.getWriter()) {
                                 Gson gson=new GsonBuilder().setPrettyPrinting().create();
                                 JsonObject inscrit=new JsonObject();
@@ -119,7 +120,7 @@ public class ActionServlet extends HttpServlet {
                     Gson gson=new GsonBuilder().setPrettyPrinting().create();
                     ResultSet rs;
                     conn = DBConnection.Connection();
-                    rs = DBConnection.FindUserWithEmail(email, conn);
+                    rs = User.FindUserWithEmail(email, conn);
                     JsonObject jsonCompte=new JsonObject();
                     while (rs.next()){
                         jsonCompte.addProperty("id_user", rs.getString(1));
@@ -176,5 +177,4 @@ public class ActionServlet extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
-
 }
