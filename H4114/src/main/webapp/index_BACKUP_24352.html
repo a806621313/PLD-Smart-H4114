@@ -1,0 +1,73 @@
+<<<<<<< HEAD
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Start Page</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <script type="text/javascript" src="./js/camera.js"></script>
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+        
+        
+        
+    </head>
+    <body>
+        <h1>Hello a!</h1>
+        <video id="video" width="640" height="480" autoplay></video>
+        <button id="start">Start</button>
+        <button id="snap">Snap Photo</button>
+        <button id="stream">Start Live Streaming</button>
+        <button id="listen">Listen</button>
+        <button id="map" onclick="window.location.href='./map.html'">Show map</button>
+        <canvas id="canvas" width="640" height="480"></canvas>
+        
+        <div id="errorMsg"></div>
+        
+        <script>
+            $('#start').on('click', function () {
+                start();
+                console.log('Camera started');
+            });
+            $('#stream').on('click', function () {
+                stream();
+                console.log('Stream started');
+            });
+        </script>
+    </body>
+</html>
+=======
+<html>
+    <head>
+        <title>Manifest</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <div class="style">
+        <h1>Sign in</h1>
+        <img src="./icons/gorilla.png" />
+        <div class="container">
+        <form action="#" class="was-validated">
+            <div class="form-group">
+                <label for="email">E-mail</label>
+                <input type="email" class="form-control" id="email" placeholder="Enter email" required>
+            </div>
+            <div class="form-group">
+                <label for="pseudonyme">Pseudonyme</label>
+                <input type="text" class="form-control" id="pwd" placeholder="Pseudonyme" required>
+            </div>
+            <div class="form-group">
+                <label for="pwd">Password</label>
+                <input type="password" class="form-control" id="pwd" placeholder="Enter password" required>
+            </div>
+            <p style="font-size:20px;">Don't have an account yet ? Sign up <a href="sign-up.html">here</a>.</p>
+            <br>
+            <a href="./home.html" class="button" >Sign in</a>
+            <!--<input id="inscription" class="button_text" type="submit" value="Submit" onclick="Inscription()">-->
+            <!--<span id="message" style="color:red"></span>-->
+        </form>
+        </div>  
+        </div>
+    </body>
+</html>
+>>>>>>> server
