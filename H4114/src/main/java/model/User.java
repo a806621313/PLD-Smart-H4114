@@ -88,20 +88,18 @@ public class User {
         stmt.setString(1, email); 
         stmt.setString(2, password); 
         ResultSet rs = stmt.executeQuery();
-
-        if (rs != null) 
+        User user=null;
+        if (rs.next()) 
         {
             rs.last();    
-            User user = new User( 
+            user = new User( 
                   rs.getString("email"),
                   rs.getString("password"),
                   rs.getString("pseudo") 
-          );
-            
-            return user;  
+            );
         } 
         
-        return null;
+        return user;
     }
     
     public static boolean IsPartAssembly(Connection conn, User user) throws SQLException{
