@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Start Page</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <script type="text/javascript" src="./js/camera.js"></script>
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    </head>
+    <body>
+        <h1>Hello a toi!</h1>
+        <table>
+            
+        </table>
+        
+        <div id="errorMsg"></div>
+        
+        <script>
+            function joinRoom(){
+                 
+            }
+            
+            $(document).ready(function () {
+                $.ajax({
+                    url: './ActionServlet2',
+                    method: 'POST',
+                    data: {
+                        action : 'room'
+                    },
+                    dataType: 'json'
+                }).done(function (data) {
+                    // ici votre code...
+                    // 
+                    // si connexion ok, aller sur la page suivante :
+                    //$('#message').html('<b> bonjour </b>');
+                    var response = data;
+                    var chambers = response.rooms;
+                    var i = 0;
+                    for(i = 0; chambers.length; i++){
+                        var element = chambers[i];
+                        var numRoom = element.num;
+                        var numPersons = element.person;
+                        
+                    }
+                });
+            });
+        
+        </script>
+    </body>
+</html>
