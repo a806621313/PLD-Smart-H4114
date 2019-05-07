@@ -5,10 +5,19 @@ var assemblyTable = [];
 
 function createPositions() {
 
-    getParticipants();
-    
     positions.push({location: {latitude: latitude, longitude: longitude}});
-    positions.push({location: {latitude: 45.782019, longitude: 4.872554}});
+    for (var i = 0; i< participants.length; i++)
+    {
+        var lat = participants[i].latitude;
+        var long = participants[i].longitude;
+        positions.push({location: {latitude: lat, longitude: long}});
+        
+        var assembly = participants[i].assembly;
+        var title = participants[i].title;
+        assemblyTable.push({assembly,title});
+    }
+    
+    /*positions.push({location: {latitude: 45.782019, longitude: 4.872554}});
     positions.push({location: {latitude: 45.781980, longitude: 4.872514}});
     positions.push({location: {latitude: 45.782039, longitude: 4.872470}});
     positions.push({location: {latitude: 45.782048, longitude: 4.872501}});
@@ -28,6 +37,7 @@ function createPositions() {
     assemblyTable.push(5);
     assemblyTable.push(2);
     assemblyTable.push(5);
+    */
 }
 
 function getLocation() {
@@ -41,9 +51,23 @@ function getLocation() {
 function setPosition(position) {
     latitude = position.coords.latitude;
     longitude = position.coords.longitude;
-    initMap(latitude, longitude);
-    console.log(latitude);
-    console.log(longitude);
+    
+    $.ajax({
+            url: './UserServlet',
+            method: 'POST',
+            data: {
+                action: 'getParticipants',
+            },
+            dataType: 'json',
+            error: function () {
+                alert("Error while sending new request");
+            }
+        }).done(function (data) {
+            
+            initMap(latitude, longitude, data.Participants);
+             
+        });
+    
 }
 
 var latitude;
@@ -59,7 +83,6 @@ function newAssembly() {
 
 
 function createAssembly() {
-    console.log("test", latitude,longitude);
     $('#message').text("");
     var title = $('#title').val();
     var description = $('#description').val();
@@ -95,8 +118,11 @@ function createAssembly() {
     }
 }
 
-function initMap(latitude, longitude) {
+function initMap(latitude, longitude, participants) {
     var location = {lat: latitude, lng: longitude};
+    
+   
+    
     map = new google.maps.Map(document.getElementById("map"), {
         zoom: 19,
         scaleControl: false,
@@ -110,7 +136,7 @@ function initMap(latitude, longitude) {
             position: google.maps.ControlPosition.LEFT_BOTTOM
         }});
     
-    createPositions();
+    createPositions(participants);
     //Markers
     var marker0 = new google.maps.Marker({
         position: location,
@@ -154,8 +180,6 @@ function initMap(latitude, longitude) {
     rallyDiv.appendChild(createRallyDiv);
     rallyDiv.appendChild(joinRallyDiv);
     map.controls[google.maps.ControlPosition.TOP_LEFT].push(rallyDiv);
-
-
 }
 
 /*var x = document.getElementById("demo");
@@ -205,11 +229,10 @@ function dbscan() {
     var clusterUser = cluster[0];
     const assembly = new Set();
     
-    for (var i = 1; i < positions.length; i++)
+    for (var i = 1; i < assemblyTable.length; i++)
     {
         if(cluster[i] == clusterUser)
         {
-            console.log(assemblyTable[i]);
             if(!assembly.has(assemblyTable[i]))
             {
                 assembly.add(assemblyTable[i]);
@@ -217,6 +240,7 @@ function dbscan() {
         }
         
     }
+
     
     
   /* for (var i = 0; i < positions.length; i++) {

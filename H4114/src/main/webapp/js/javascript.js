@@ -55,9 +55,9 @@ function getAssemblies()
         });
 }
 
-function getParticipants(callback)
+function getParticipants()
 {
-
+   
     $.ajax({
             url: './UserServlet',
             method: 'POST',
@@ -70,8 +70,6 @@ function getParticipants(callback)
             }
         }).done(function (data) {
             console.log(data);
-              //  var reponse = jQuery.parseJSON(data.Participants)
-                      //  console.log(reponse);
         });
 }
 

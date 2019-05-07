@@ -83,6 +83,8 @@ public class Participant {
         json.addProperty("id", this.id);
         json.addProperty("status", this.status);
         json.addProperty("pseudo", this.user.getPseudo());
+        json.addProperty("assembly", this.assembly.getId());
+        json.addProperty("title", this.assembly.getTitle());
         json.addProperty("latitude", this.latitude);
         json.addProperty("longitude", this.longitude);
         return json;
