@@ -8,7 +8,7 @@ function Inscription(){
     }
     else{
         $.ajax({
-                url: './ActionServlet',
+                url: './UserServlet',
                 method: 'POST',
                 data: {
                         action: 'inscription',

@@ -5,7 +5,6 @@ package com.insalyon.videostream;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -15,7 +14,6 @@ import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -49,24 +47,54 @@ public class ActionServlet extends HttpServlet {
                 Gson gson = new GsonBuilder().setPrettyPrinting().create();
                 JsonObject jsonResponse = new JsonObject();
                 HashMap<String, Boolean> rooms = ServerEndPoint.getServerEndPointState();
-                HashMap<String, Set <ServerEndPoint>> persons = ServerEndPoint.getServerEndPoints();
                 JsonArray jsonListe = new JsonArray();
                 for (Map.Entry<String, Boolean> entry : rooms.entrySet()) {
-                    if(Objects.equals(entry.getValue(), Boolean.FALSE)){
+                    if (Objects.equals(entry.getValue(), Boolean.FALSE)) {
                         JsonObject json = new JsonObject();
                         json.addProperty("num", entry.getKey());
-                        json.addProperty("person", persons.get(entry.getKey()).size());
                         jsonListe.add(json);
                     }
                 }
                 jsonResponse.add("rooms", jsonListe);
                 out.println(gson.toJson(jsonResponse));
                 out.close();
-            } else if(action.equals("create")){
-                
+            } else if (action.equals("create")) {
+
+            } else if (action.equals("join")) {
+                Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                JsonObject jsonResponse = new JsonObject();
+                HashMap<String, Boolean> rooms = ServerEndPoint.getServerEndPointState();
+                String number = request.getParameter("number");
+                if (Objects.equals(rooms.get(number), Boolean.FALSE)) {
+                    jsonResponse.addProperty("join", "true");
+                } else {
+                    jsonResponse.addProperty("join", "false");
+                }
+                out.println(gson.toJson(jsonResponse));
+                out.close();
             }
+            
         }
     }
+
+    /*public static void printListePersonnes(PrintWriter out, List<Service.Personne> personnes) {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+        JsonArray jsonListe = new JsonArray();
+        for (Service.Personne p : personnes) {
+            JsonObject jsonPersonne = new JsonObject();
+            jsonPersonne.addProperty("id", p.getId());
+            jsonPersonne.addProperty("civilite", p.getCivilite());
+            jsonPersonne.addProperty("nom", p.getNom());
+            jsonPersonne.addProperty("prenom", p.getPrenom());
+            jsonPersonne.addProperty("mail", p.getMail());
+            jsonPersonne.addProperty("adresse", p.getAdresse());
+            jsonListe.add(jsonPersonne);
+        }
+        JsonObject container = new JsonObject();
+        container.add("personnes", jsonListe);
+        out.println(gson.toJson(container));
+    }*/
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
@@ -105,4 +133,17 @@ public class ActionServlet extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
+
+    /* private void printPersonne(PrintWriter out, Service.Personne p) {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        JsonObject jsonPersonne = new JsonObject();
+        jsonPersonne.addProperty("id", p.getId());
+        jsonPersonne.addProperty("civilite", p.getCivilite());
+        jsonPersonne.addProperty("nom", p.getNom());
+        jsonPersonne.addProperty("prenom", p.getPrenom());
+        jsonPersonne.addProperty("mail", p.getMail());
+        jsonPersonne.addProperty("adresse", p.getAdresse());
+        jsonPersonne.addProperty("dateNaissance", p.getDateNaissance().toString());
+        out.println(gson.toJson(jsonPersonne));
+    }*/
 }

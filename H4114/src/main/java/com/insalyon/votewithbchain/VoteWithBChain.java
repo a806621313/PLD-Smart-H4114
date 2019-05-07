@@ -5,10 +5,11 @@
  */
 package com.insalyon.votewithbchain;
 
+import model.Survey;
+import model.Block;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import com.insalyon.blockchain.Block;
 import java.io.PrintStream;
 import java.util.ArrayList;
 
@@ -21,67 +22,77 @@ public class VoteWithBChain {
 
     public static ArrayList<Block> blockchain = new ArrayList<Block>(); 
     
-    public static void main(String[] args) {
-       
-        Sondage sondage = new Sondage("Où manger ce midi?");
-        sondage.addResponseChoice("RU");
-        sondage.addResponseChoice("RI");
-        sondage.addResponseChoice("Olivier");
-        sondage.addResponseChoice("Prevert");
-        sondage.addResponseChoice("Grillon");
+    /*public static void main(String[] args) {
+      Survey survey=null;
+        //Survey survey = new Survey("Où manger ce midi?");
+        survey.addResponseChoice("RU");
+        survey.addResponseChoice("RI");
+        survey.addResponseChoice("Olivier");
+        survey.addResponseChoice("Prevert");
+        survey.addResponseChoice("Grillon");
         
-        sondage.addAnswerVote("RU");
-        sondage.addAnswerVote("RU");
-        sondage.addAnswerVote("RI");
-        sondage.addAnswerVote("RI");
-        sondage.addAnswerVote("RI");
-        sondage.addAnswerVote("Olivier");
-        sondage.addAnswerVote("Olivier");
-        sondage.addAnswerVote("Olivier");
-        sondage.addAnswerVote("Olivier");
-        sondage.addAnswerVote("Prevert");
-        sondage.addAnswerVote("Grillon");
-        sondage.addAnswerVote("Grillon");
-        sondage.addAnswerVote("Grillon");
-        sondage.addAnswerVote("Grillon");
+        survey.addAnswerVote("RU");
         
-        sondage.showResults (System.out);
+        startSurvey(survey);
         
-        sondage.showClearResults (System.out);
+        survey.addAnswerVote("RU");
+        
+        long t = 0;
+        while (t<50)
+        {
+            survey.addAnswerVote("RI");
+            survey.addAnswerVote("RI");
+            survey.addAnswerVote("Olivier");
+            survey.addAnswerVote("Olivier");
+            survey.addAnswerVote("Prevert");
+            survey.addAnswerVote("Prevert");
+            survey.addAnswerVote("Grillon");
+            survey.addAnswerVote("Grillon");
+            t++;
+        }
+        
+     // sondage.showResults (System.out);
+        
+     survey.showClearResults (System.out);
         
         
     
         
+    }*/
+    
+    public static void startSurvey(Survey survey)
+    {
+        survey.start();
     }
     
-    public static void sendQuestionAndAnswers(PrintStream stream, Sondage sondage)
+    public static void sendQuestionAndAnswers(PrintStream stream, Survey survey)
     {
         final GsonBuilder builder = new GsonBuilder();
         final Gson gson = builder.create();
-        final String json = gson.toJson(sondage);
+        final String json = gson.toJson(survey);
         
     }
     
-    public static void setVote(PrintStream stream, Sondage sondage, String response)
+    public static void setVote(PrintStream stream, Survey survey, String response)
     {
-        stream.println(sondage.addAnswerVote(response));
+        stream.println(survey.addAnswerVote(response));
         
     }
     
-    public static void recapVote(PrintStream stream, Sondage sondage, String address)
+    public static void recapVote(PrintStream stream, Survey survey, String address)
     {
-        sondage.getVote(stream, address);
+        survey.getVote(stream, address);
        
     }
     
-    public static void sendClearResult(PrintStream stream, Sondage sondage)
+    public static void sendClearResult(PrintStream stream, Survey survey)
     {
-         sondage.showClearResults(stream);
+         survey.showClearResults(stream);
     }
     
-    public static void addContestation(Sondage sondage)
+    public static void addContestation(Survey survey)
     {
-         sondage.addContestation();
+         survey.addContestation();
     }
     
     

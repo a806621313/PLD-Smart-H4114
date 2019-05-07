@@ -18,7 +18,8 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import javax.websocket.server.PathParam;
-import org.json.JSONObject;
+import com.google.gson.JsonObject;
+import org.json.simple.JSONObject;
 /**
  *
  * @author scheah
@@ -41,10 +42,6 @@ public class ServerEndPoint {
     public static HashMap<String, String> getServerEndPointRoomKey(){
         return serverEndPointRoomKey;
     }
-    
-    public static HashMap<String, Set<ServerEndPoint> > getServerEndPoints(){
-        return serverEndPoints;
-    }
  
     @OnOpen
     public void onOpen(Session session, @PathParam("usertype") String usertype, @PathParam("room") String roomNumber) throws IOException {
@@ -61,9 +58,6 @@ public class ServerEndPoint {
             if(serverEndPoints.get(roomNumber).size() < 1){
                 serverEndPoints.get(roomNumber).add(this);
                 serverEndPointState.replace(roomNumber, Boolean.TRUE);
-                JSONObject json  = new JSONObject();
-                json.put("type", "join");
-                sendToStart(json.toString());
             }
             
         }
@@ -71,7 +65,7 @@ public class ServerEndPoint {
  
     @OnMessage
     public String onMessage(String message, Session session) throws IOException {
-        JSONObject json = new JSONObject(message);
+        /*JSONObject json = new JSONObject(message);
         if (json != null) {
             String userType = json.getString("user");
             String type = json.getString("type");
@@ -103,7 +97,7 @@ public class ServerEndPoint {
                     System.err.println("Wrong userType sent answer ");
                 }
             }
-        }
+        } */
         return message;
     }
  

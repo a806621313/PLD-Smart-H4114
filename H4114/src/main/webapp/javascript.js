@@ -1,4 +1,3 @@
-
 $(document).ready(function(){
     $('#content').load("map.html");
  });
@@ -18,7 +17,7 @@ function changeToView() {
 function changeToStream() {
     document.getElementsByClassName("active")[0].classList.remove("active");
     document.getElementById("stream").classList.add("active");
-    $('#content').load("stream1.html");
+    $('#content').load("stream.html");
 }
 
 function changeToVote() {
@@ -32,3 +31,6 @@ function changeToAlert() {
     document.getElementById("alert").classList.add("active");
     $('#content').load("alert.html");
 }
+
+
+    

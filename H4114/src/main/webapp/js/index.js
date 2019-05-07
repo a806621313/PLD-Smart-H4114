@@ -3,7 +3,7 @@ function Connect(){
         var email = $('#email').val();
         var password = $('#password').val();
         $.ajax({
-                url: './ActionServlet',
+                url: './UserServlet',
                 method: 'POST',
                 data: {
                         action: 'connect',
