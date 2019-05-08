@@ -1,0 +1,117 @@
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
+    <strong>Create question</strong>>
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Survey</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+            <!--div>Question 1
+                <input type="radio" name="question1" value="" >
+            </div-->
+                <form action="#" id="form" class="was-validated">
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="inputGroup-sizing-default">Question</span>
+                        </div>
+                        <textarea id="question" class="form-control" aria-label="With textarea" required></textarea>
+                    </div>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="inputGroup-sizing-default">Choice 1</span>
+                        </div>
+                        <input id="choice1" type="text" class="form-control choice" aria-label="Default" aria-describedby="inputGroup-sizing-default" required>
+                    </div>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="inputGroup-sizing-default">Choice 2</span>
+                        </div>
+                        <input id="choice2" type="text" class="form-control choice" aria-label="Default" aria-describedby="inputGroup-sizing-default" required>
+                    </div>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="inputGroup-sizing-default">Choice 3</span>
+                        </div>
+                        <input id="choice3" type="text" class="form-control choice" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+                    </div>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="inputGroup-sizing-default">Choice 4</span>
+                        </div>
+                        <input id="choice4" type="text" class="form-control choice" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+                    </div>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="inputGroup-sizing-default">Choice 5</span>
+                        </div>
+                        <input id="choice5" type="text" class="form-control choice" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+                    </div>
+                </form>
+            <div id="message" style="font-size:20px;font-family:Arial;text-align:center"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" id="create" class="btn btn-primary">Create</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function createQuestion(){
+        $('#message').html("");
+        var question = $('#question').val();
+        console.log(question);
+        if(question === ''){
+            document.getElementById('message').style.color = 'red';
+            $('#message').text("Please enter one question!");
+        }else{
+            var choice1 = $('#choice1').val();
+            var choice2 = $('#choice2').val();
+            if(choice1 !== '' && choice2 !== ''){
+                var choice3 = $('#choice3').val();
+                var choice4 = $('#choice4').val();
+                var choice5 = $('#choice5').val();
+                var choiceStr;
+                choiceStr = choice1 + ";" + choice2;
+                if(choice3 !== ''){
+                    choiceStr += ";" + choice3;
+                }
+                if(choice4 !== ''){
+                    choiceStr += ";" + choice4;
+                }
+                if(choice5 !== ''){
+                    choiceStr += ";" + choice5;
+                }
+                document.getElementById('message').style.color = 'green';
+                $('#message').text("Success");
+                $.ajax({
+                        url: './ParticipantServlet',
+                        method: 'POST',
+                        data: {
+                            action: 'createSurvey',
+                            question: question,
+                            choices: choiceStr,
+                            time: 3600
+                        },
+                        dataType: 'json'
+                });
+            }else{
+                document.getElementById('message').style.color = 'red';
+                $('#message').text("Please enter the first two choices");
+            }
+        }
+    }
+
+    $(document).ready(function () {
+        $('#create').on('click', function () {
+            createQuestion();
+        });
+    });
+</script>

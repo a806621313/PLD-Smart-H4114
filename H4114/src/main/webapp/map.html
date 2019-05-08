@@ -1,0 +1,39 @@
+<div>
+<!--<p id="demo" style="height: 30px; width: 100%;"></p>-->
+
+<div id="map" style="height: 100%; width: 100%;"></div> 
+    
+<div id="createAssembly" style="display: none;">
+
+        <form action="#" class="was-validated">
+            <div class="form-group">
+                <label for="title">Titre de Rassemblement</label>
+                <input type="text" class="form-control" id="title" placeholder="Titre" required>
+            </div>
+            <div class="form-group">
+                <label for="description">Description</label>
+                <input type="text" class="form-control" id="description" placeholder="Description" required>
+            </div>
+            <div class="form-group">
+                <label for="radio"></label>
+                <input type="number" class="form-control" id="radio" placeholder="Rayon minimal (en mètres)" required>
+            </div>
+            <div class="form-group">
+                <label for="colour"></label>
+                <input type="color" class="form-control" id="colour" required>
+            </div>
+            <!--valider : vérifie si un rassemblement prévu est proche (en date et lieu)-->
+            <span id="message" style="color:red"></span>
+            <br>
+            
+            <button class="button" onclick="createAssembly()">Create</button>
+            <span id="message" style="color:red"></span>
+        </form>
+
+  
+</div>
+</div>
+
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCyfR4HiGWGxQ7CiwH4VGEh0qjaL6LYv1M&callback=getLocation"></script>
+<script type="text/javascript" src="js/setMap.js"></script> 
+<script type="text/javascript" src="js/jDBSCAN.js"></script>
