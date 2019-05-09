@@ -9,10 +9,12 @@ function createPositions(participants) {
 
     positions= [];
     positions.push({location: {latitude: latitude, longitude: longitude}});
-    
-    var id_assembly = participants[0].id_assembly;
-    var title = participants[0].title;
-    assemblyTable.push({id_assembly,title});
+    if (participants.length > 0)
+    {
+        var id_assembly = participants[0].id_assembly;
+        var title = participants[0].title;
+        assemblyTable.push({id_assembly,title});
+    }
             
     
     if (participants)
@@ -96,6 +98,10 @@ function createAssembly() {
     var title = $('#title').val();
     var description = $('#description').val();
     var radio = $('#radio').val();
+    if (title == "")
+    {
+        return;
+    }
     var colour = $('#colour').val();
     if (false) { //Verify whether there are errors
         $('#message').text("Failed");
@@ -150,7 +156,7 @@ function quitAssembly()
 function initButtons()
 {
     $("#rallyDiv").remove();
-    if (!theAssembly)
+    if (theAssembly === null || jQuery.isEmptyObject(theAssembly))
     {
         var rallyDiv = document.createElement('div');
         var createRallyDiv = document.createElement('div');
@@ -247,14 +253,43 @@ function initMap(latitude, longitude, participants) {
         map: map,
         icon: {url: "./icons/man-black-user.png"}
     });
+    
+    for (var i = 0; i < participants.length; i++) {
+   
+        var colour = participants[i].colour.toString();
+        var pinImage = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|" + colour.slice(1),
+        new google.maps.Size(21, 34),
+        new google.maps.Point(0,0),
+        new google.maps.Point(10, 34));
+        
+        markers[i] = new google.maps.Marker({
+            position: {lat: participants[i].latitude, lng:  participants[i].longitude},
+            map: map,
+            icon:pinImage,
+            strokeColor:participants[i].colour,
+
+        });
+        
+        var s = "u";
+        if (participants[i].status == 1)
+        {
+            s="<h4>&#x1F3A5;</h4>";
+        }
+        else if (participants[i].status == 2)
+        {
+            s="<h4>⚖</h4>";
+        }
+         console.log(s);
+            
+        attachPseudo(markers[i], "<div style='text-align:center'>"
+                +"<h3>"+participants[i].pseudo+ "</h3>"+ s +
+                participants[i].title+"</div>");
+                
+    }
     attachPseudo(marker0, "moi");
 
     //afficher des icons avec la couleur selon leur groupe
     dbscan();
-    for (var i = 0; i < markers.length; ++i) {
-        attachPseudo(markers[i], "" + i + "");
-    }
-    
     initButtons();
 }
 
