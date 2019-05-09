@@ -3,8 +3,10 @@
 
 <div id="map" style="height: 100%; width: 100%;"></div> 
     
-<div id="createAssembly" style="display: none;">
-
+<div id="createAssembly" style="display: none">
+        <button type="button" class="close" onclick="closeCreate()">
+            <span aria-hidden="true">&times;</span>
+        </button>
         <form action="#" class="was-validated">
             <div class="form-group">
                 <label for="title">Titre de Rassemblement</label>
@@ -26,7 +28,7 @@
             <span id="message" style="color:red"></span>
             <br>
             
-            <button class="button" onclick="createAssembly()">Create</button>
+            <button class="btn btn-primary" onclick="createAssembly()">Create</button>
             <span id="message" style="color:red"></span>
         </form>
 
@@ -34,6 +36,8 @@
 </div>
 </div>
 
-<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCyfR4HiGWGxQ7CiwH4VGEh0qjaL6LYv1M&callback=getLocation"></script>
-<script type="text/javascript" src="js/setMap.js"></script> 
-<script type="text/javascript" src="js/jDBSCAN.js"></script>
+<script>
+    $(document).ready(function(){
+       getLocation(); 
+    });
+</script>

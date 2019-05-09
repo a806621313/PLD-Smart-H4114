@@ -52,6 +52,13 @@ public class ServerEndPoint {
         return serverEndPoints;
     }
     
+    public static HashMap<String, ServerEndPoint> getServerEndPointStart(){
+        return serverEndPointStart;
+    }
+    
+    public String getName(){
+        return name;
+    }
     
     public static int getNumber(){
         return roomIndex++;

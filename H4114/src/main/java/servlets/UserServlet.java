@@ -12,6 +12,7 @@ import com.google.gson.JsonObject;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -55,6 +56,29 @@ public class UserServlet extends HttpServlet {
         User user;
         Participant participant;
         switch(action){
+            case "clearData":
+                user = (User)request.getSession().getAttribute("user");
+                Integer id = user.getId();
+                System.out.println("In Clear");
+                System.out.println(id);
+                try {
+                    conn = DBConnection.Connection();
+                    String sql="delete from participants where id_user = ? ";
+                    PreparedStatement stmt = conn.prepareStatement(sql);
+                    stmt.setInt(1, id); 
+	            stmt.executeUpdate();
+                } catch (ClassNotFoundException ex) {
+                    Logger.getLogger(UserServlet.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (SQLException ex) {
+                    Logger.getLogger(UserServlet.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (InstantiationException ex) {
+                    Logger.getLogger(UserServlet.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (IllegalAccessException ex) {
+                    Logger.getLogger(UserServlet.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                /*request.getSession().removeAttribute("user");*/
+                request.getSession().removeAttribute("participant");
+                break;
             case "connect":
             {
                 try {
@@ -64,11 +88,19 @@ public class UserServlet extends HttpServlet {
                     JsonObject connect=new JsonObject();
                     conn = DBConnection.Connection();
                     user = User.Connect(conn, email, password);
+                   
                     
                     
                     try (PrintWriter out = response.getWriter()) {
                         Gson gson=new GsonBuilder().setPrettyPrinting().create();
                         if(user != null){
+                            
+                            participant = Participant.GetParticipantUser(conn,user);
+                            if (participant != null)
+                            {
+                                request.getSession().setAttribute("participant", participant);
+                            }
+                            
                             connect.addProperty("connect", "successful");
                             request.getSession().setAttribute("user", user);
                         }
@@ -210,7 +242,42 @@ public class UserServlet extends HttpServlet {
                
                 break;
             }
+            case "getAssemblySession":
+            {
+                try
+                {
+                    PrintWriter out = response.getWriter();
+                    Gson gson=new GsonBuilder().setPrettyPrinting().create();
+                    conn = DBConnection.Connection();
+                    participant = (Participant) request.getSession().getAttribute("participant");
+                    JsonObject reponse = new JsonObject();
+                    JsonObject assembly = new JsonObject();
+                    System.out.println(participant);
+                    if (participant != null)
+                    {
+                        reponse.addProperty("exist", true);
+                        assembly.addProperty("id_assembly", participant.getAssembly().getId());
+                        assembly.addProperty("title", participant.getAssembly().getTitle());
+                        assembly.addProperty("colour", participant.getAssembly().getColour());
+                    }
+                    else
+                    {
+                        reponse.addProperty("exist", false);
+                    }
+                   
+                  
+                   
+                    reponse.add("Assembly", assembly);
+                    out.println(gson.toJson(reponse));
+                    
+                } catch (ClassNotFoundException | SQLException | InstantiationException | IllegalAccessException ex) {
+                Logger.getLogger(UserServlet.class.getName()).log(Level.SEVERE, null, ex);
+            }
+               
+                break;
+            }
              
+            
              
             case "joinAssembly":
             {
@@ -219,6 +286,11 @@ public class UserServlet extends HttpServlet {
                     conn = DBConnection.Connection();
                     
                     user = (User) request.getSession().getAttribute("user");
+                    if(user == null)
+                    {
+                        System.err.println("kkk");
+                        break;
+                    }
                     participant = (Participant) request.getSession().getAttribute("participant");
                     String idAssembly = request.getParameter("id_assembly");   
                     Assembly assembly;
@@ -255,9 +327,19 @@ public class UserServlet extends HttpServlet {
                     JsonObject participate=new JsonObject();
                     participate.addProperty("participate", "true");
                     joinAssembly.add("participate", participate);
-                    out.println(gson.toJson(joinAssembly));
+                    
                     System.out.println(participant.toJson());
                     request.getSession().setAttribute("participant", participant);
+                    
+                    JsonObject assemblyJ = new JsonObject();
+                    
+  
+                    assemblyJ.addProperty("id", participant.getAssembly().getId());
+                    assemblyJ.addProperty("title", participant.getAssembly().getTitle());
+                    assemblyJ.addProperty("colour", participant.getAssembly().getColour());
+
+                    joinAssembly.add("Assembly", assemblyJ);
+                    out.println(gson.toJson(joinAssembly));
                     
                     
                 }
@@ -275,16 +357,17 @@ public class UserServlet extends HttpServlet {
             }
             break;
             }
-            case "getPseudo":
+            case "getPseudos":
             {
-                JsonObject getPseudo =new JsonObject();
                 
-                user = (User) request.getSession().getAttribute("participant");
+                JsonObject getPseudo =new JsonObject();
+                System.out.println("---------------");
+                user = (User) request.getSession().getAttribute("user");
                 if (user == null)
                 {
                     break;
                 }
-                
+                System.out.println("ooook");
                 String pseudoU = user.getPseudo();
                 
                 participant = (Participant) request.getSession().getAttribute("participant");
@@ -298,7 +381,7 @@ public class UserServlet extends HttpServlet {
                         JsonObject parti =new JsonObject();
                         
                         parti.addProperty("pseudo", pseudoU);
-                        parti.addProperty("status", statusU >= 1);
+                        parti.addProperty("status", statusU);
                         getPseudo.add("participate", parti);
                         
                         out.println(gson.toJson(getPseudo));
@@ -310,8 +393,8 @@ public class UserServlet extends HttpServlet {
                         Gson gson=new GsonBuilder().setPrettyPrinting().create();
                         JsonObject parti =new JsonObject();
                         
-                        parti.addProperty("psuedo", pseudoU);
-                        parti.addProperty("status", false);
+                        parti.addProperty("pseudo", pseudoU);
+                        parti.addProperty("status", -1);
                         getPseudo.add("participate", parti);
                         
                         out.println(gson.toJson(getPseudo));
@@ -351,7 +434,7 @@ public class UserServlet extends HttpServlet {
                 
                     if (user == null)
                     {
-                        System.out.println("asdwqwqqasdasdwqwqwqwqwqw");
+                       
                         break;
                     }
                                    
@@ -366,33 +449,32 @@ public class UserServlet extends HttpServlet {
                             request.getSession().setAttribute("assembly", assembly);
                     }
                     else{
-                        System.out.println("wqwqqwqwqwqwqwqw");
+                        
                         break;
                     }
-               
-                PrintWriter out = response.getWriter() ;
-                if(Participant.Insert(conn, participant)){
-                    request.getSession().setAttribute("participant", participant);
-                    
+                     
+                   
                     Gson gson=new GsonBuilder().setPrettyPrinting().create();
-                    JsonObject participate=new JsonObject();
-                    JsonObject createAssembly =new JsonObject();
-                    participate.addProperty("created", "true");
-                    createAssembly.add("createAssembly", participate);
-                    out.println(gson.toJson(createAssembly));
-                    
+                    PrintWriter out = response.getWriter() ;
+                    JsonObject reponse = new JsonObject();
+                    if(Participant.Insert(conn, participant))
+                    {
+                       
+                        JsonObject assemblyJ = new JsonObject();
+                        reponse.addProperty("created", true);
+                        assemblyJ.addProperty("id_assembly", participant.getAssembly().getId());
+                        assemblyJ.addProperty("title", participant.getAssembly().getTitle());
+                        assemblyJ.addProperty("colour", participant.getAssembly().getColour());
+                        reponse.add("Assembly", assemblyJ);
+                        
+                        request.getSession().setAttribute("participant", participant);
+                    }
+                    else
+                    {
+                        reponse.addProperty("created", false);
+                    }
 
-                }
-                else{
-                    Gson gson=new GsonBuilder().setPrettyPrinting().create();
-                    JsonObject participate=new JsonObject();
-                    JsonObject createAssembly =new JsonObject();
-                    participate.addProperty("created", "false");
-                    createAssembly.add("createAssembly", participate);
-                    out.println(gson.toJson(createAssembly));
-                    
-                    
-                }
+                    out.println(gson.toJson(reponse));
                 out.close();
             } catch (SQLException | ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
                 Logger.getLogger(UserServlet.class.getName()).log(Level.SEVERE, null, ex);

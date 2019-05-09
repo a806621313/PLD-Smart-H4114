@@ -18,7 +18,7 @@ function changeToView() {
 function changeToStream() {
     document.getElementsByClassName("active")[0].classList.remove("active");
     document.getElementById("stream").classList.add("active");
-    $('#content').load("stream1.html");
+    $('#content').load("stream.html");
 }
 
 function changeToVote() {
@@ -26,8 +26,10 @@ function changeToVote() {
     document.getElementById("vote").classList.add("active");
     $('#content').load("vote.html");
     
-    getAssemblies();
-    getParticipants();
+    getPseudos();
+    //getAssemblies();
+    //getParticipants();
+
 }
 
 function changeToAlert() {
@@ -48,10 +50,28 @@ function getAssemblies()
             },
             dataType: 'json',
             error: function () {
-                console.log("GetAssemblies : Error while sending new request");
+                console.log("GetAssemblies : Error while getting assemblies");
             }
         }).done(function (data) {
            
+        });
+}
+
+function getPseudos()
+{
+   
+    $.ajax({
+            url: './UserServlet',
+            method: 'POST',
+            data: {
+                action: 'getPseudos',
+            },
+            dataType: 'json',
+            error: function () {
+                console.log("getPseudos : Error while getting pseudo");
+            }
+        }).done(function (data) {
+            console.log(data);
         });
 }
 
@@ -66,7 +86,7 @@ function getParticipants()
             },
             dataType: 'json',
             error: function () {
-                console.log("GetParticipants : Error while sending new request");
+                console.log("GetParticipants : Error while getting participants");
             }
         }).done(function (data) {
             console.log(data);

@@ -8,22 +8,22 @@ function Inscription(){
     }
     else{
         $.ajax({
-                url: './UserServlet',
-                method: 'POST',
-                data: {
-                        action: 'inscription',
-                        email:email,
-                        pseudo:pseudo,
-                        password:password
-                },
-                dataType: 'json'
+            url: './UserServlet',
+            method: 'POST',
+            data: {
+                    action: 'inscription',
+                    email:email,
+                    pseudo:pseudo,
+                    password:password
+            },
+            dataType: 'json'
         }).done(function (data) {
-                var reponse = data.inscrit;
-                if (reponse.inscrit === "true") {
-                        window.location = "index.html";
-                } else {
-                       $('#message').text("Failed: Email or password invalid!");
-                }
+            var reponse = data.inscrit;
+            if (reponse.inscrit === "true") {
+                    window.location = "index.html";
+            } else {
+                   $('#message').text("Failed: Email or password invalid!");
+            }
         });
     }
 }

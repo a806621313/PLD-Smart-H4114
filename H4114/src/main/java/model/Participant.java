@@ -83,7 +83,7 @@ public class Participant {
         json.addProperty("id", this.id);
         json.addProperty("status", this.status);
         json.addProperty("pseudo", this.user.getPseudo());
-        json.addProperty("assembly", this.assembly.getId());
+        json.addProperty("id_assembly", this.assembly.getId());
         json.addProperty("title", this.assembly.getTitle());
         json.addProperty("latitude", this.latitude);
         json.addProperty("longitude", this.longitude);
@@ -135,7 +135,7 @@ public class Participant {
             Integer idU =  rs.getInt("id_user");
             User user = User.getUser(conn, idU);
             Integer idA = rs.getInt("id_assembly");
-            Assembly assembly = Assembly.getAssembly(conn, idU);
+            Assembly assembly = Assembly.getAssembly(conn, idA);
             int status =  rs.getInt("status");
             double latitude =  rs.getDouble("latitude");
             double longitude =  rs.getDouble("longitude");
@@ -146,9 +146,41 @@ public class Participant {
 
         return participants;
     }
+    
+    public static Participant GetParticipantUser(Connection conn, User user) throws SQLException {
+       
+        String sql="select * from participants where id_user = ?";
+        PreparedStatement stmt = conn.prepareStatement(sql,ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);   
+        stmt.setInt(1, user.getId());      
+        ResultSet rs = stmt.executeQuery();
 
-    public static boolean Remove(Connection conn, String id) throws SQLException {
-        return true;
+        if(rs.next())
+        {
+            
+            Integer idP = rs.getInt("id_participant");
+            Integer idU =  rs.getInt("id_user");
+            Integer idA = rs.getInt("id_assembly");
+            Assembly assembly = Assembly.getAssembly(conn, idU);
+            int status =  rs.getInt("status");
+            double latitude =  rs.getDouble("latitude");
+            double longitude =  rs.getDouble("longitude");
+            
+            Participant participant = new Participant(user, assembly, latitude, longitude, status);
+            
+            return participant;
+        }
+
+        return null;
+    }
+
+    public static boolean Remove(Connection conn, Integer idPart) throws SQLException {
+            System.out.println(idPart);
+            String sql="delete from participants where id_participant = ?";
+            PreparedStatement stmt = conn.prepareStatement(sql);           
+            stmt.setInt(1, idPart);
+            stmt.executeUpdate();
+            return true;
+            
     }
 
 }

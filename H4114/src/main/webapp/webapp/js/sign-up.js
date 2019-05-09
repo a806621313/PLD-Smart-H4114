@@ -28,8 +28,6 @@ function Inscription(){
     }
 }
 
-
-
 function getUser(){
     console.log($('#form').serializeJSON());
     console.log(JSON.stringify($('#form').serializeJSON()));

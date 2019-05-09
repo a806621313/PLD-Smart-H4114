@@ -13,7 +13,7 @@ var index = 0;
 
 
 
-const configuration = {iceServers: [{urls: 'turn:10.43.2.185:3478',credential: 'test',
+const configuration = {iceServers: [{urls: 'turn:192.168.1.102:3478',credential: 'test',
     username: 'test'}]};
 const constraints = window.constraints = {
   audio: false,
@@ -86,7 +86,7 @@ function connectStart(number){
     socket.onopen = function (event) {
         identity = 'caller';
         console.log("/!\\ Connexion serveur");
-        buttonControl('State4');
+        buttonControl('State4',mode);
     };
     socket.onerror = function (event) {
         console.log(event);

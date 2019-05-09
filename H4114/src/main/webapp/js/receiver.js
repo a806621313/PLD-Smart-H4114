@@ -7,7 +7,7 @@ var socketListen;
 var pcListen;
 var listenName;
 
-const configurationListen = {iceServers: [{urls: 'turn:10.43.2.185:3478',credential: 'test',
+const configurationListen = {iceServers: [{urls: 'turn:192.168.1.102:3478',credential: 'test',
     username: 'test'}]};
 
 function setLocalAndSendMessage(sessionDescription) {
@@ -38,7 +38,7 @@ function connectListen(number, name){
     socketListen.onopen = function (event) {
         identity = 'receiver';
         console.log("/!\\ Connexion serveur");
-        buttonControl('State4');
+        buttonControl('State4',mode);
     };
     socketListen.onerror = function (event) {
         console.log(event);

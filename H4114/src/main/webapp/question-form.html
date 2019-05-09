@@ -19,6 +19,12 @@
                 <form action="#" id="form" class="was-validated">
                     <div class="input-group mb-3">
                         <div class="input-group-prepend">
+                            <span class="input-group-text" id="inputGroup-sizing-default">Durée du sondage (secondes)</span>
+                        </div>
+                        <input type="number" id="duration" class="form-control" aria-label="With textarea" required/>
+                    </div>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
                             <span class="input-group-text" id="inputGroup-sizing-default">Question</span>
                         </div>
                         <textarea id="question" class="form-control" aria-label="With textarea" required></textarea>
@@ -66,6 +72,7 @@
 <script>
     function createQuestion(){
         $('#message').html("");
+        var duration = $('#duration').val();
         var question = $('#question').val();
         console.log(question);
         if(question === ''){
@@ -89,8 +96,8 @@
                 if(choice5 !== ''){
                     choiceStr += ";" + choice5;
                 }
-                document.getElementById('message').style.color = 'green';
-                $('#message').text("Success");
+               /* document.getElementById('message').style.color = 'green';
+                $('#message').text("Success"); */
                 $.ajax({
                         url: './ParticipantServlet',
                         method: 'POST',
@@ -98,9 +105,28 @@
                             action: 'createSurvey',
                             question: question,
                             choices: choiceStr,
-                            time: 3600
+                            time: parseInt(duration)  * 1000 + 500
                         },
                         dataType: 'json'
+                 }).done(function (data) {
+                     
+                    var id_survey = data.survey.id_survey;
+                     var s = {
+                         id_survey,
+                         question,
+                         choiceStr,
+                         duration
+                     }
+                     
+                    Survey = s;
+                    
+                    voted = true;
+                    updateSurvey();
+                    setTimeout(function()
+                    {
+                        updateSurvey();
+                    }, parseInt(duration)  * 1000 + 500);
+      
                 });
             }else{
                 document.getElementById('message').style.color = 'red';

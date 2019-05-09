@@ -1,0 +1,215 @@
+<div id="chooseRoom">
+    <h1 id="displayName" style="text-align:center">Hello to you!</h1>
+    <div>
+        <div class="input-group mb-3 d-flex justify-content-center">
+          <div class="input-group-append">
+            <div class="btn-group" role="group" aria-label="Basic example">
+                <button id="createRoom" class="btn btn-danger">Create room</button>
+                <button id="refresh" class="btn btn-info" >Refresh</button>
+            </div>
+          </div>
+        </div>
+    </div>
+    <div>
+        <table id="freeRoom" class="table table-bordered" style="width:100%">
+            <thead>
+                <tr>
+                    <td class="text-white bg-primary" style="font-family:Arial;text-align:center" ><strong>Room number</strong></td>
+                    <td class="text-white bg-primary" style="font-family:Arial;text-align:center" ><strong>Intiator</strong></td>
+                    <td class="text-white bg-primary" style="font-family:Arial;text-align:center"><strong>Number of persons</strong></td>
+                    <td class="text-white bg-primary" style="font-family:Arial;text-align:center"><strong>Join this room</strong></td>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+            </tbody>
+        </table>
+    </div> 
+</div>
+
+<div id="contentVideo" style="width:100%;height:50%">
+    <video id="video" style="width:100%;height:90%" class="border border-primary" controls="controls" autoplay></video>
+    <br/> 
+    <div class="btn-group d-flex justify-content-center" role="group" aria-label="Basic example">
+        <button id="start" class="btn btn-success btn-lg">Start</button>
+        <button id="stop" class="btn btn-danger btn-lg">Close</button>
+    </div>
+</div>
+
+<div id="errorMsg"></div>
+
+<script>
+    var name = '';
+    var identity = 'none';
+    var mode = 0;
+
+    function joinRoom(number){
+       document.getElementById("stop").disabled=false; 
+       connectListen(number, name);
+    }
+
+    function startRoom(){
+        var roomNumber;
+         $.ajax({
+            url: './ParticipantServlet',
+            method: 'POST',
+            data: {
+                action : 'create'
+            },
+            dataType: 'json'
+        }).done(function (data) {
+            var response = data;
+            roomNumber = response.index;
+            connectStart(roomNumber);
+        });
+    }
+
+    function getRoomInfos(rooms){
+        clearInfos();
+        var RoomHTML = $('#tableBody');
+        if(rooms.length === 0){
+            var strNull = '<td colspan="4" style="font-family:Arial;text-align:center"><strong>There is no room yet.</strong></td>';
+             RoomHTML.append(strNull);
+        }else{
+            var i;
+            var table = document.getElementById("tableBody");
+            for(i = 0; i<rooms.length; i++){
+                var element = rooms[i];
+                console.log(element);
+                var numRoom = element["num"];
+                var numPersons = element["person"];
+                var start = element["starter"];
+                var row = table.insertRow(-1);
+                var cell1 = row.insertCell(-1);
+                var cell2 = row.insertCell(-1);
+                var cell3 = row.insertCell(-1);
+                var cell4 = row.insertCell(-1);
+                cell1.innerHTML = numRoom;
+                cell2.innerHTML = start;
+                cell3.innerHTML = numPersons;
+                cell4.innerHTML = '<button type="button" class="btn btn-outline-primary" onClick="joinRoom(' + numRoom + ')"' + ' value="' + numRoom +'" >Join</button>';
+            }
+        }
+    }
+
+    function clearInfos(){
+        $("#tableBody").html("");
+    }
+
+    function refreshInfos(){
+         $.ajax({
+            url: './ParticipantServlet',
+            method: 'POST',
+            data: {
+                action : 'room'
+            },
+            dataType: 'json'
+        }).done(function (data) {
+            // ici votre code...
+            // 
+            // si connexion ok, aller sur la page suivante :
+            //$('#message').html('<b> bonjour </b>');
+            var response = data;
+            var chambers = response.rooms;
+            getRoomInfos(chambers);
+        });
+    }
+    
+    function getPseudo(){
+         $.ajax({
+            url: './UserServlet',
+            method: 'POST',
+            data: {
+                action : 'getPseudos'
+            },
+            dataType: 'json'
+        }).done(function (data) {
+            var response = data;
+            var part = response.participate;
+            console.log(part);
+            name = part.pseudo;
+            var status = part.status;
+            if(status >= 1){
+                mode = 1;
+            }else{
+                mode = 2;
+            }
+            buttonControl('State2',mode);
+            $("#displayName").html("Welcome "+name);
+        });
+    }
+
+    $(document).ready(function () {
+        $.ajax({
+            url: './ParticipantServlet',
+            method: 'POST',
+            data: {
+                action : 'room'
+            },
+            dataType: 'json'
+        }).done(function (data) {
+            var response = data;
+            console.log(response);
+            var chambers = response.rooms;
+            getRoomInfos(chambers);
+            getPseudo();
+            $('#createRoom').on('click', function () {
+                if(document.getElementById("start").disabled === false){
+                    alert("Please open your camera before create a room.");
+                }else{
+                    startRoom();
+                    buttonControl('State4',mode);
+                }
+            });
+            $('#refresh').on('click', function () {
+                refreshInfos();
+            });
+            $('#start').on('click', function () {
+                start();
+                buttonControl('State3',mode);
+                console.log('Camera started');
+            });
+            $('#stop').on('click', function () {
+                console.log(identity);
+                if(identity === 'none'){
+                    stop();
+                }else if(identity === 'caller'){
+                    stopCaller();
+                }else if(identity === 'receiver'){
+                    stopReceiver();
+                }
+                buttonControl('State2',mode);
+                console.log('Camera stopped');
+            });
+        });
+    });
+    
+    function buttonControl(state, mode){
+        if(mode === 1){
+            switch (state) {
+                case 'State1':
+                    break;
+                case 'State2':
+                    document.getElementById("start").disabled=false; 
+                    document.getElementById("stop").disabled=true; 
+                    document.getElementById("createRoom").disabled=false; 
+                    break;
+                case 'State3':
+                    document.getElementById("start").disabled=true; 
+                    document.getElementById("stop").disabled=true; 
+                    document.getElementById("createRoom").disabled=false; 
+                    break;
+                case 'State4':
+                    document.getElementById("start").disabled=true; 
+                    document.getElementById("stop").disabled=false; 
+                    document.getElementById("createRoom").disabled=true; 
+                    break;   
+                default:
+                  console.log('Sorry, we are out of ' + state + '.');
+              }
+          }else if(mode === 2){
+              document.getElementById("start").disabled=true; 
+              document.getElementById("stop").disabled=true; 
+              document.getElementById("createRoom").disabled=true; 
+          }
+    }
+</script>

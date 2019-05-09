@@ -3,7 +3,7 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLongTitle">Survey</h5>
+                <h5 class="modal-title" id="exampleModalLongTitle">Rassemblement</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -14,8 +14,8 @@
             <div id="errorMsg" style="font-size:20px;font-family:Arial;text-align:center"></div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" id="join" class="btn btn-primary">Join</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                <button type="button" id="join" class="btn btn-primary" style="display:none;">Rejoindre</button>
             </div>
         </div>
     </div>
@@ -24,7 +24,6 @@
 $(document).ready(function () {
     $('#join').on('click', function () {
         var radioValue = $("input[name='rallies']:checked").val();
-        console.log(radioValue);
         if(radioValue){
             $.ajax({
                 url: './UserServlet',
@@ -37,12 +36,41 @@ $(document).ready(function () {
                     longitude: longitude
                 },
                 dataType: 'json'
+            }).done(function (data) {
+                console.log(data);
+                 $('#bigrallies').modal('hide');
+                 theAssembly = data.Assembly;
+                 initButtons();
             });
         } else {
             $("#errorMsg").innerHTML("Please select a value!");
         }
     });
-    $.ajax({
+    
+    $('#bigrallies').modal('show');
+    var ralliesDiv = document.getElementById('rallies');
+    var i;
+    console.log(assemblyInterested);
+    assemblyInterested.forEach(function(value) {
+        var assembly = value;
+        var radioItem = document.createElement('input');
+        radioItem.setAttribute("type", "radio");
+        radioItem.setAttribute("name", "rallies");
+        radioItem.setAttribute("value", assembly.id_assembly);
+        radioItem.addEventListener("click",function(){
+            $("#join").show();
+        });
+        var radioLabel = document.createElement('label');
+        radioLabel.textContent = assembly.title;
+        radioLabel.style.marginLeft = "10px";
+        radioLabel.style.verticalAlign = "middle";
+        
+        ralliesDiv.appendChild(radioItem);
+        ralliesDiv.appendChild(radioLabel);
+        ralliesDiv.appendChild(document.createElement('br'));
+  });
+    
+    /*$.ajax({
         url: './UserServlet',
         method: 'POST',
         data: {
@@ -69,6 +97,6 @@ $(document).ready(function () {
             ralliesDiv.appendChild(radioLabel);
             ralliesDiv.appendChild(document.createElement('br'));
         }
-    });
+    });*/
 });
 </script>

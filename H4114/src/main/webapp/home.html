@@ -3,13 +3,13 @@
         <title>Manifest</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
         <link rel="stylesheet" href="style.css">
+        
     </head>
-    <body>
+    <body onbeforeunload="return fun()">
         <div>
             <a href="index.html">
                 <img src="./icons/return.png" alt="index" style="width:42px;height:42px;border:0;">
@@ -26,6 +26,24 @@
         <script type="text/javascript" src="./js/javascript.js"></script>
         <script type="text/javascript" src="./js/caller.js"></script>
         <script type="text/javascript" src="./js/receiver.js"></script>
-
+        <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCyfR4HiGWGxQ7CiwH4VGEh0qjaL6LYv1M"></script>
+        <script type="text/javascript" src="js/setMap.js"></script> 
+        <script type="text/javascript" src="js/jDBSCAN.js"></script>
+        <script>
+            function fun(){
+                goodbye();
+                return undefined;
+            }
+ 
+            function goodbye(){
+                $.ajax({
+                    url:"http://localhost:8084/H4114/UserServlet?action=clearData",
+                    type:"POST",
+                    success:function(data){
+                        console.log("Déconnexion du client");
+                    }
+                }); 
+            }
+         </script>
     </body>
 </html>
